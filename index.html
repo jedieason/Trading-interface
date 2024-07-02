@@ -246,7 +246,7 @@
                 <button onclick="toggleMargin('right')">逐倉</button>
                 <div class="slider margin-slider" id="margin-slider"></div>
             </div>
-            <button class="button-leverage" id="leverage-button">10x</button>
+            <button class="button-leverage" id="leverage-button">1.00×</button>
         </div>
         <div class="toggle-button" id="toggle-button">
             <button onclick="toggleSlide('left')">整張</button>
@@ -283,22 +283,22 @@
     <div class="modal" id="leverage-modal">
         <div class="modal-content">
             <span class="close" id="modal-close">&times;</span>
-            <div class="current" id="modal-current">當前 10.00x</div>
+            <div class="current" id="modal-current">當前 1.00×</div>
             <div class="modal-value">
                 <button class="control-btn" id="modal-decrement">-</button>
-                <span id="modal-value">10.00x</span>
+                <span id="modal-value">1.00×</span>
                 <button class="control-btn" id="modal-increment">+</button>
             </div>
             <div class="multipliers" id="modal-multipliers">
-                <div class="multiplier">1x</div>
-                <div class="multiplier">2x</div>
-                <div class="multiplier">3x</div>
-                <div class="multiplier">5x</div>
-                <div class="multiplier selected">10x</div>
-                <div class="multiplier">20x</div>
-                <div class="multiplier">50x</div>
-                <div class="multiplier">75x</div>
-                <div class="multiplier">100x</div>
+                <div class="multiplier selected">1×</div>
+                <div class="multiplier">2×</div>
+                <div class="multiplier">3×</div>
+                <div class="multiplier">5×</div>
+                <div class="multiplier">10×</div>
+                <div class="multiplier">20×</div>
+                <div class="multiplier">50×</div>
+                <div class="multiplier">75×</div>
+                <div class="multiplier">100×</div>
             </div>
             <button class="confirm-btn" id="modal-confirm">確認</button>
         </div>
@@ -314,8 +314,8 @@
         const modalMultipliersElement = document.getElementById('modal-multipliers');
         const modalDecrementButton = document.getElementById('modal-decrement');
         const modalIncrementButton = document.getElementById('modal-increment');
-        let currentValue = 10.00;
-        let selectedValue = 10.00;
+        let currentValue = 1.00;
+        let selectedValue = 1.00;
 
         leverageButton.addEventListener('click', () => {
             leverageModal.style.display = 'flex';
@@ -323,8 +323,8 @@
                 leverageModal.classList.add('show');
             }, 10); // 微小的延遲，讓瀏覽器有時間應用 display 屬性
             currentValue = selectedValue;
-            modalValueElement.textContent = `${currentValue.toFixed(2)}x`;
-            modalCurrentElement.textContent = `當前 ${selectedValue.toFixed(2)}x`;
+            modalValueElement.textContent = `${currentValue.toFixed(2)}×`;
+            modalCurrentElement.textContent = `當前 ${selectedValue.toFixed(2)}×`;
 
             // 確保選中的倍率有正確的CSS class
             const selectedElement = document.querySelector('.selected');
@@ -349,7 +349,7 @@
 
         modalConfirm.addEventListener('click', () => {
             selectedValue = currentValue;
-            leverageButton.textContent = `${selectedValue.toFixed(2)}x`;
+            leverageButton.textContent = `${selectedValue.toFixed(2)}×`;
             leverageModal.classList.remove('show');
             setTimeout(() => {
                 leverageModal.style.display = 'none';
@@ -358,13 +358,13 @@
 
         modalConfirm.addEventListener('click', () => {
             selectedValue = currentValue;
-            leverageButton.textContent = `${selectedValue.toFixed(2)}x`;
+            leverageButton.textContent = `${selectedValue.toFixed(2)}×`;
             leverageModal.classList.remove('show');
         });
 
         function updateModalValue(newValue) {
             currentValue = newValue;
-            modalValueElement.textContent = `${newValue.toFixed(2)}x`;
+            modalValueElement.textContent = `${newValue.toFixed(2)}×`;
             const selectedElement = document.querySelector('.selected');
             if (selectedElement) {
                 selectedElement.classList.remove('selected');
