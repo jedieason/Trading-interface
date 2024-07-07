@@ -5,17 +5,232 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>交易界面</title>
     <style>
-        body {
-            background-color: white;
-            font-family: Arial, sans-serif;
+
+        @keyframes fadeInZoom {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 0.9;
+                transform: scale(1);
+            }
         }
+
+        @keyframes fadeOutZoom {
+            0% {
+                opacity: 0.9;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+        }
+
+        
+
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 22px;
+            font-size: 1.4em;
+            color: #333;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            margin: 0;
+            position: relative;
+            height: 100%; /* 調整高度 */
+            width: 100%; /* 調整寬度 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .constum-body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            position: relative;
+            height: 100%; /* 調整高度 */
+            width: 100%; /* 調整寬度 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
         .container {
             width: 95%;
             margin: 0 auto;
             text-align: center;
             position: relative;
-            z-index: 1;
+            z-index: 0; /* 確保內容在背景 */
+            padding-top: 40px; /* 增加填充確保內容不遮擋標題和按鈕 */
+            box-sizing: border-box;
         }
+
+        /* 針對手機 */
+        @media only screen and (max-width: 992px) {
+            .register-button {
+                top: 25px;
+                right: 56px;
+            }
+            .login-button {
+                top: 22px;
+                right: 12px;
+            }
+            .intro-button {
+                top: 25px;
+                right: 12px;
+            }
+        }
+
+        /* 針對桌面 */
+        @media only screen and (min-width: 993px) {
+            .register-button {
+                top: 25px;
+                right: 70px;
+            }
+            .login-button {
+                top: 24px;
+                right: 25px;
+            }
+            .intro-button {
+                top: 25px;
+                right: 25px;
+            }
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 1em;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #000;
+            color: #fff;
+            transition: box-shadow 0.2s ease;
+            outline: none;
+        }
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px;
+            border-radius: 15px;
+            color: #fff;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+
+        .intro-button {
+            position: absolute;
+            font-size: 1em;
+            color: #777;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+        }
+
+        .register-button {
+            position: absolute;
+            font-size: 1em;
+            color: #aaa;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+            z-index: 1000; /* 增加這行 */
+        }
+
+        .login-button {
+            position: absolute;
+            font-size: 1em;
+            color: #fff;
+            background: #000;
+            border: none;
+            border-radius: 6px;
+            padding: 3px 6px;
+            cursor: pointer;
+            outline: none;
+            z-index: 1000; /* 增加這行 */
+        }
+
+        .register-modal,
+        .login-modal {
+            position: fixed;
+            top: 27%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            text-align: left;
+            animation: fadeInZoom 0.5s forwards;
+            z-index: 10;
+            display: none;
+            z-index: 2000; /* 增加這行 */
+        }
+
+        .cashout-info,
+        .alert-info {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 15px;
+            color: #fff;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+
+        .alert-info {
+            background: rgba(255, 0, 0, 0.7);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.2em;
+            cursor: pointer;
+            color: #000;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
         .button {
             background-color: #f0f0f0;
             border: none;
@@ -29,6 +244,12 @@
             color: black;
             font-size: 16px;
         }
+
+        .balance {
+            margin-left: auto; /* 右對齊 */
+            font-size: 16px;
+        }
+
 
         .button-leverage {
             background-color: #f0f0f0;
@@ -143,6 +364,7 @@
             justify-content: space-between;
             margin: 10px 0;
             font-size: 16px;
+            width: 100%; /* 確保整行佔滿寬度 */
         }
         .chart {
             height: 300px;
@@ -164,6 +386,7 @@
             justify-content: center;
             z-index: 2;
             opacity: 0;
+            z-index: 2000; /* 增加這行 */
             transition: opacity 0.3s; /* 將 transition 時間設置為 0.3s */
         }
         .modal.show {
@@ -236,6 +459,40 @@
     </style>
 </head>
 <body>
+    <div class="header">𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓</div>
+    <button class="register-button" onclick="toggleRegister()">註冊</button>
+    <button class="login-button" onclick="toggleLogin()">登入</button>
+    <button id="userButton" class="intro-button" style="display:none;"></button>
+    <div id="registerModal" class="register-modal center">
+        <button class="close-btn" onclick="toggleRegister()">×</button>
+        <h2>註冊</h2>
+        <div class="form-group">
+            <label for="registerUsername">帳號：</label>
+            <input type="text" id="registerUsername" placeholder="輸入帳號">
+        </div>
+        <div class="form-group">
+            <label for="registerPassword">密碼：</label>
+            <input type="password" id="registerPassword" placeholder="輸入密碼">
+        </div>
+        <div class="form-group">
+            <button onclick="register()">註冊</button>
+        </div>
+    </div>
+    <div id="loginModal" class="login-modal center">
+        <button class="close-btn" onclick="toggleLogin()">×</button>
+        <h2>登入</h2>
+        <div class="form-group">
+            <label for="loginUsername">帳號：</label>
+            <input type="text" id="loginUsername" placeholder="輸入帳號">
+        </div>
+        <div class="form-group">
+            <label for="loginPassword">密碼：</label>
+            <input type="password" id="loginPassword" placeholder="輸入密碼">
+        </div>
+        <div class="form-group">
+            <button onclick="login()">登入</button>
+        </div>
+    </div>
     <div class="container">
         <div class="chart">
             K線圖
@@ -272,9 +529,8 @@
         </div>
         <div class="info">
             <span>可用</span>
-            <span>1,000</span>
+            <span id="balance">請先註冊或登入</span>
         </div>
-
         <button class="button button-buy">買入（做多）</button>
         <button class="button button-sell">賣出（做空）</button>
     </div>
@@ -305,6 +561,7 @@
     </div>
 
     <script>
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxTsq2V6tiVQ_IDKkEnYauzWef5G2TjdbCG7WWjMHYRRslzYGQPW4Vu6vWHEdD3IdRH/exec'; // 替換為你的Google Apps Script部署URL
         const leverageButton = document.getElementById('leverage-button');
         const leverageModal = document.getElementById('leverage-modal');
         const modalClose = document.getElementById('modal-close');
@@ -316,6 +573,122 @@
         const modalIncrementButton = document.getElementById('modal-increment');
         let currentValue = 1.00;
         let selectedValue = 1.00;
+
+        function toggleRegister() {
+            const registerModal = document.getElementById('registerModal');
+            const loginModal = document.getElementById('loginModal'); // 新增這一行
+
+            if (registerModal.style.display === 'none' || registerModal.style.display === '') {
+                registerModal.style.display = 'block';
+                registerModal.style.animation = 'fadeInZoom 0.5s forwards';
+                loginModal.style.display = 'none'; // 新增這一行
+            } else {
+                registerModal.style.animation = 'fadeOutZoom 0.5s forwards';
+                setTimeout(() => {
+                    registerModal.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        function toggleLogin() {
+            const loginModal = document.getElementById('loginModal');
+            const registerModal = document.getElementById('registerModal');
+
+            if (loginModal.style.display === 'none' || loginModal.style.display === '') {
+                loginModal.style.display = 'block';
+                loginModal.style.animation = 'fadeInZoom 0.5s forwards';
+                registerModal.style.display = 'none';
+            } else {
+                loginModal.style.animation = 'fadeOutZoom 0.5s forwards';
+                setTimeout(() => {
+                    loginModal.style.display = 'none';
+                }, 500);
+            }
+        }
+
+        function register() {
+            const registerUsername = document.getElementById('registerUsername').value;
+            const registerPassword = document.getElementById('registerPassword').value;
+            fetch(`${scriptUrl}?action=registerUser&username=${registerUsername}&password=${registerPassword}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showMessage('註冊成功！', 'cashout-info');
+                        username = registerUsername;  // 這裡賦值
+                        const userButton = document.getElementById('userButton');
+                        userButton.style.display = 'block';
+                        userButton.textContent = `${username}`;
+                        document.querySelector('.login-button').style.display = 'none';
+                        document.querySelector('.register-button').style.display = 'none';
+                        balance = data.balance;
+                        updateBalance();
+                        toggleRegister();
+                    } else {
+                        showMessage(data.message, 'alert-info');
+                    }
+                });
+        }
+
+        function login() {
+            const loginUsername = document.getElementById('loginUsername').value;
+            const loginPassword = document.getElementById('loginPassword').value;
+            fetch(`${scriptUrl}?action=checkLogin&username=${loginUsername}&password=${loginPassword}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        balance = data.balance;
+                        username = loginUsername;  // 這裡賦值
+                        const userButton = document.getElementById('userButton');
+                        userButton.style.display = 'block';
+                        userButton.textContent = `${username}`;
+                        document.querySelector('.login-button').style.display = 'none';
+                        document.querySelector('.register-button').style.display = 'none';
+                        updateBalance();
+                        showMessage('登入成功！', 'cashout-info');
+                        toggleLogin();
+                    } else {
+                        showMessage('登入失敗！', 'alert-info');
+                    }
+                });
+        }
+
+        function showMessage(messageText, className) {
+            const existingMessage = document.querySelector('.message');
+            if (existingMessage) {
+                document.body.removeChild(existingMessage);
+            }
+            const message = document.createElement('div');
+            message.className = `message ${className}`;
+            message.textContent = messageText;
+            document.body.appendChild(message);
+
+            setTimeout(() => {
+                message.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(message);
+                }, 1000); // 1秒後移除元素
+            }, 1000); // 1秒後開始淡出
+        }
+
+        function updateBalance() {
+            if (username) { // 如果用戶已登入
+                balance = Math.round(balance * 100) / 100;
+                document.getElementById('balance').textContent = balance.toFixed(2);
+                updateServerBalance();
+            } else {
+                document.getElementById('balance').textContent = '請先註冊或登入';
+            }
+        }
+
+        function updateServerBalance() {
+            fetch(`${scriptUrl}?action=updateBalance&username=${username}&balance=${balance}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        showMessage('更新餘額失敗', 'alert-info');
+                    }
+                });
+        }
 
         leverageButton.addEventListener('click', () => {
             leverageModal.style.display = 'flex';
