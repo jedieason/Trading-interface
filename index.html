@@ -367,11 +367,12 @@
             width: 100%; /* 確保整行佔滿寬度 */
         }
         .chart {
+            width: 100%;
             height: 300px;
             margin: 20px 0;
-            background-color: #f0f0f0;
-            border: 1px solid #ccc;
+            background-color: #ffffff;
             font-size: 16px;
+            box-sizing: border-box;
         }
         /* 視窗樣式 */
         .modal {
@@ -458,6 +459,7 @@
         }
     </style>
 </head>
+<link rel="stylesheet" href="style.css">
 <body>
     <div class="header">𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓</div>
     <button class="register-button" onclick="toggleRegister()">註冊</button>
@@ -494,9 +496,12 @@
         </div>
     </div>
     <div class="container">
-        <div class="chart">
+        <div class="chart" style="width: 100%; height: 100%;">
             <!-- K線圖會在這裡顯示 -->
         </div>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="techanjs.js"></script>
+        <script type="text/javascript" src="app.js"></script>
         <div class="button-row">
             <div class="toggle-button" id="margin-toggle">
                 <button onclick="toggleMargin('left')">全倉</button>
