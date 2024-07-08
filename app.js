@@ -267,7 +267,7 @@ function move(coords, index) {
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
             svgText.style("font-size", "11px")  // 設置字體大小
-                .text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低：" + dataArr[i].low + ", 收盤：" + dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume);
+                .text(/*d3.timeFormat("%Y/%m/%d")(coords.x) + ", */"開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低：" + dataArr[i].low + ", 收盤：" + dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume);
 
         }
     }
