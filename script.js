@@ -1,5 +1,5 @@
 (async () => {
-        const sheetDataUrl = 'https://script.google.com/macros/s/AKfycbxyc9TWyEcuIotd9QTYTIHdZUrqRRDO21SQsZdTIhTPbEbcKhJZh2e3H-UKGEDaMuU/exec'; // 替換成你的 Google Apps Script 網頁應用程式 URL
+        const sheetDataUrl = 'https://script.google.com/macros/s/AKfycbzrVVB7NRCoKaziyjXbQMYGULPjHsWXxBBgZherGzVr7g5L-U_A1OiXwk2-fTOJkwU/exec'; // 替換成你的 Google Apps Script 網頁應用程式 URL
         let chart;
         let lastPrice = null; // 新增變數來儲存最後的價格
     
