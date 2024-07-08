@@ -1,6 +1,7 @@
-var margin = {top: 20, right: 50, bottom: 30, left: 60},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+var chartContainer = document.querySelector('.chart');
+var margin = {top: 0, right: 2, bottom: 21, left: 48};
+    width = chartContainer.clientWidth - margin.left - margin.right;
+    height = 300;
 
 // 設定時間格式
 var parseDate = d3.timeParse("%Y%m%d");
@@ -60,6 +61,7 @@ var timeAnnotation = techan.plot.axisannotation()
         .format(d3.timeFormat('%Y-%m-%d'))
         .translate([0, height]);
 
+        
 // 設定十字線
 var crosshair = techan.plot.crosshair()
         .xScale(x)
@@ -78,8 +80,8 @@ var textSvg = d3.select(".chart").append("svg")
 var svgText = textSvg.append("g")
             .attr("class", "description")
             .append("text")
-//            .attr("x", margin.left)
-            .attr("y", 6)
+            .attr("x", margin.right)
+            .attr("y", 10)
             .attr("dy", ".71em")
             .style("text-anchor", "start")
             .text("");
@@ -264,7 +266,8 @@ function move(coords, index) {
     var i;
     for (i = 0; i < dataArr.length; i ++) {
         if (coords.x === dataArr[i].date) {
-            svgText.text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低："+ dataArr[i].low + ", 收盤："+ dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume); 
+            svgText.style("font-size", "11px")  // 設置字體大小
+                .text(d3.timeFormat("%Y/%m/%d")(coords.x) + ", 開盤：" + dataArr[i].open + ", 高：" + dataArr[i].high + ", 低：" + dataArr[i].low + ", 收盤：" + dataArr[i].close + ", 漲跌：" + dataArr[i].change + "(" + dataArr[i].percentChange + "%)" + ", 成交量：" + dataArr[i].volume);
 
         }
     }
