@@ -26,10 +26,10 @@
                     selected: 1
                 },
                 title: {
-                    text: '台積電'
+                    text: '臺大醫學概念股'
                 },
                 series: [{
-                    name: '台積電',
+                    name: '臺大醫學概念股',
                     data: data,
                     type: 'areaspline',
                     threshold: null,
