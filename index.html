@@ -573,7 +573,7 @@
     </div>
 
     <script>
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxTsq2V6tiVQ_IDKkEnYauzWef5G2TjdbCG7WWjMHYRRslzYGQPW4Vu6vWHEdD3IdRH/exec'; // 替換為你的Google Apps Script部署URL
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxPoiqIEsIRR4rnsrjKzULK3Pm7GevufMIlqQ2rsuORIFBNx7KK_gAWIWELIUL3QolK/exec'; // 替換為你的Google Apps Script部署URL
         const leverageButton = document.getElementById('leverage-button');
         const leverageModal = document.getElementById('leverage-modal');
         const modalClose = document.getElementById('modal-close');
@@ -585,6 +585,7 @@
         const modalIncrementButton = document.getElementById('modal-increment');
         let currentValue = 1.00;
         let selectedValue = 1.00;
+        let user = '';
 
         function toggleRegister() {
             const registerModal = document.getElementById('registerModal');
@@ -627,6 +628,7 @@
                     if (data.success) {
                         showMessage('註冊成功！', 'cashout-info');
                         username = registerUsername;  // 這裡賦值
+                        user = registerUsername;
                         const userButton = document.getElementById('userButton');
                         userButton.style.display = 'block';
                         userButton.textContent = `${username}`;
@@ -649,6 +651,7 @@
                 .then(data => {
                     if (data.success) {
                         balance = data.balance;
+                        user = loginUsername;
                         username = loginUsername;  // 這裡賦值
                         const userButton = document.getElementById('userButton');
                         userButton.style.display = 'block';
@@ -691,6 +694,50 @@
                 document.getElementById('balance').textContent = '請先註冊或登入';
             }
         }
+
+        document.querySelector('.button-buy').addEventListener('click', function() {
+            placeOrder('buy');
+        });
+
+        document.querySelector('.button-sell').addEventListener('click', function() {
+            placeOrder('sell');
+        });
+
+        function placeOrder(type) {
+            if (!user) {
+                showMessage('請先登入', 'alert-info');
+                return;
+            }
+
+            const price = parseFloat(document.getElementById('price-input').value);
+            let quantity = parseInt(document.getElementById('quantity-input').value);
+            const unit = document.getElementById('unit-label').innerText;
+            if (unit === '張') {
+                quantity *= 1000;
+            }
+            if (type === 'sell') {
+                quantity = -quantity;
+            }
+
+            const symbol = 'NMedStock';
+            const estimatedAmount = parseFloat(document.getElementById('estimated-amount').innerText.replace(/,/g, ''));
+
+            if (type === 'buy' && estimatedAmount > balance) {
+                showMessage('餘額不足', 'alert-info');
+                return;
+            }
+
+            fetch(`https://script.google.com/macros/s/AKfycbxHdvg_OIo5sg0KsBkgYgrNrXp0R210NcWPUhzVdcuUz85baCe0RbultHCZ9t-7PlU/exec?action=placeOrder&user=${user}&symbol=${symbol}&quantity=${quantity}&price=${price}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'Order placed successfully') {
+                        showMessage('訂單提交成功！', 'cashout-info');
+                    } else {
+                        showMessage('訂單提交失敗！', 'alert-info');
+                    }
+                });
+        }
+
 
         function updateServerBalance() {
             fetch(`${scriptUrl}?action=updateBalance&username=${username}&balance=${balance}`)
