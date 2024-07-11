@@ -695,6 +695,7 @@
         let user = '';
         let latestPrice = null; // 新增變數來儲存最新的價格
         let orderType = '現股'; // 預設值
+        let onMargin = false;
 
         function toggleRegister() {
             const registerModal = document.getElementById('registerModal');
@@ -1026,6 +1027,9 @@
             leverageButton.textContent = `${selectedValue.toFixed(2)}x`;
             leverageModal.classList.remove('show');
             updateEstimatedAmount();
+            if(onMargin){
+                orderType = `融資${currentValue}×`;
+            }
             setTimeout(() => {
                 leverageModal.style.display = 'none';
             }, 300); // 與 CSS transition 時間一致，確保淡出完成後隱藏視窗
@@ -1080,12 +1084,15 @@
             if (direction === 'left') {
                 slider.style.left = '1%';
                 orderType = '現股';
+                onMargin = false;
             } else if (direction === 'middle') {
                 slider.style.left = '34.3333333333%';
                 orderType = `融資${currentValue}×`;
+                onMargin = true;
             } else {
                 slider.style.left = '67.6666666666%';
                 orderType = '融券';
+                onMargin = false;
             }
             updateEstimatedAmount();  // 在這裡添加這一行來確保更新預估價格
         }
