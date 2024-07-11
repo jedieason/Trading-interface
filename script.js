@@ -1,13 +1,11 @@
 (async () => {
     const sheetDataUrl = 'https://script.google.com/macros/s/AKfycbzrVVB7NRCoKaziyjXbQMYGULPjHsWXxBBgZherGzVr7g5L-U_A1OiXwk2-fTOJkwU/exec'; // 替換成你的 Google Apps Script 網頁應用程式 URL
     let chart;
-    let lastPrice = null; // 新增變數來儲存最後的價格
 
     // 更新 price input 和預估金額函數，只在首次載入時運行
     const updatePriceAndEstimatedAmount = (data) => {
         if (data && data.length > 0) {
             latestPrice = data[data.length - 1][1]; // 獲取最新價格
-            lastPrice = latestPrice; // 更新最後價格
             const priceInput = document.getElementById('price-input');
             priceInput.value = latestPrice.toFixed(2);
             updateEstimatedAmount();
@@ -58,32 +56,42 @@
         updatePriceAndEstimatedAmount(data);
     };
 
-    // 更新圖表數據
+    // 更新圖表數據和餘額
     const updateChartData = async () => {
         const newData = await fetch(sheetDataUrl).then(response => response.json());
         console.log(newData); // 確認新資料是否正確載入
 
         const series = chart.series[0];
         const currentData = series.options.data;
-        let dataUpdated = false; // 用來標記是否有新數據
 
         // 假設新數據的時間戳總是大於現有數據的時間戳
         newData.forEach(point => {
             const lastPoint = currentData[currentData.length - 1];
             if (point[0] > lastPoint[0]) { // 檢查新數據點是否比最後一個數據點更新
                 series.addPoint(point, true, false);
-                lastPrice = point[1]; // 更新最後價格
+                latestPrice = point[1]; // 更新最後價格
             }
         });
 
         // 更新最新價格
-        latestPrice = lastPrice;
+
+        // 獲取新的餘額
+        balance = await getBalance(user);
+
+        // 呼叫 updateBalance 函數
+        updateBalance();
     };
 
     // 初始化圖表
     await initializeChart();
 
-    // 每10秒更新一次數據
+    // 每10秒更新一次數據和餘額
     setInterval(updateChartData, 10000);
 
 })();
+async function getBalance(userName) {
+    const url = `https://script.google.com/macros/s/AKfycbxPoiqIEsIRR4rnsrjKzULK3Pm7GevufMIlqQ2rsuORIFBNx7KK_gAWIWELIUL3QolK/exec?action=queryBalance&username=${encodeURIComponent(userName)}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    return result.success ? result.balance : 0;
+}
