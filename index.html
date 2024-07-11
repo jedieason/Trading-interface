@@ -1025,15 +1025,10 @@
             selectedValue = currentValue;
             leverageButton.textContent = `${selectedValue.toFixed(2)}×`;
             leverageModal.classList.remove('show');
+            updateEstimatedAmount();
             setTimeout(() => {
                 leverageModal.style.display = 'none';
             }, 300); // 與 CSS transition 時間一致，確保淡出完成後隱藏視窗
-        });
-
-        modalConfirm.addEventListener('click', () => {
-            selectedValue = currentValue;
-            leverageButton.textContent = `${selectedValue.toFixed(2)}×`;
-            leverageModal.classList.remove('show');
         });
 
         function updateModalValue(newValue) {
