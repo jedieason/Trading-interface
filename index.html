@@ -10,6 +10,25 @@
     <script src="accessibility.js"></script>
     <style>
 
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 0.9;
+            }
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 0.9;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* 保留原有的 fadeInZoom 和 fadeOutZoom 動畫規則 */
         @keyframes fadeInZoom {
             0% {
                 opacity: 0;
@@ -31,6 +50,7 @@
                 transform: scale(0.8);
             }
         }
+
 
         
 
@@ -87,7 +107,8 @@
             padding-top: 40px; /* 增加填充確保內容不遮擋標題和按鈕 */
         }
 
-        /* 針對手機 */
+
+        /* 針對手機平板 */
         @media only screen and (max-width: 992px) {
             .register-button {
                 top: 25px;
@@ -100,6 +121,14 @@
             .intro-button {
                 top: 25px;
                 right: 12px;
+            }
+            .order-button {
+                top: 25px;
+                right: 130px;
+            }
+            .inventory-button {
+                top: 25px;
+                right: 85px;
             }
         }
 
@@ -116,6 +145,14 @@
             .intro-button {
                 top: 25px;
                 right: 25px;
+            }
+            .order-button {
+                top: 25px;
+                right: 190px;
+            }
+            .inventory-button {
+                top: 25px;
+                right: 130px;
             }
         }
         .form-group {
@@ -166,14 +203,16 @@
         .intro-button {
             position: absolute;
             font-size: 1em;
-            color: #777;
+            color: #aaa;
             cursor: pointer;
             background: none;
             border: none;
             outline: none;
         }
 
-        .register-button {
+        .register-button,
+        .inventory-button,
+        .order-button {
             position: absolute;
             font-size: 1em;
             color: #aaa;
@@ -183,6 +222,7 @@
             outline: none;
             z-index: 1000; /* 增加這行 */
         }
+
 
         .login-button {
             position: absolute;
@@ -306,6 +346,44 @@
             font-size: 16px;
             color: black;
         }
+        .stock-info {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 100%;
+        }
+        .stock-number {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .current-stock {
+            background-color: #000000;
+            color: white;
+            padding: 3px 6px;
+            border-radius: 15px;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        .stock-name {
+            font-size: 16px;
+            color: #666;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .info-label {
+            color: #666;
+        }
+        .info-value {
+            font-weight: bold;
+        }
+        .profit {
+            font-weight: bold;
+        }
+        
         .slider {
             position: absolute;
             top: 5%;
@@ -403,13 +481,24 @@
             display: flex;
             opacity: 1;
         }
-        .modal-content {
+        .modal-leverage {
             background-color: white;
             border-radius: 15px;
             width: 85%;
             padding: 20px;
             text-align: center;
             position: relative;
+        }
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 500px;
+            width: 80%;
+            max-height: 80%; /* 限制視窗高度 */
+            overflow-y: auto; /* 內容可滾動 */
+            position: relative;
+            animation: fadeInZoom 0.5s forwards;
         }
         .close {
             position: absolute;
@@ -472,7 +561,23 @@
     <div class="header">𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓</div>
     <button class="register-button" onclick="toggleRegister()">註冊</button>
     <button class="login-button" onclick="toggleLogin()">登入</button>
+    <button id="orderButton" class="order-button" onclick="fetchOrders()" style="display:none;">委託</button>
+    <button id="inventoryButton" class="inventory-button" onclick="fetchInventory()" style="display:none;">庫存</button>
     <button id="userButton" class="intro-button" style="display:none;"></button>
+
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="toggleOrder()">&times;</button>
+            <div id="order-container"></div>
+        </div>
+    </div>
+    <div id="inventoryModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="toggleInventory()">&times;</button>
+            <div id="inventory-container"></div>
+        </div>
+    </div>
+
     <div id="registerModal" class="register-modal center">
         <button class="close-btn" onclick="toggleRegister()">×</button>
         <h2>註冊</h2>
@@ -549,7 +654,7 @@
 
     <!-- 模態視窗 -->
     <div class="modal" id="leverage-modal">
-        <div class="modal-content">
+        <div class="modal-leverage">
             <span class="close" id="modal-close">&times;</span>
             <div class="current" id="modal-current">當前 1.00×</div>
             <div class="modal-value">
@@ -574,6 +679,7 @@
 
     <script>
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbxPoiqIEsIRR4rnsrjKzULK3Pm7GevufMIlqQ2rsuORIFBNx7KK_gAWIWELIUL3QolK/exec'; // 替換為你的Google Apps Script部署URL
+        const placeOrderurl = 'https://script.google.com/macros/s/AKfycbx2qyvEUQYEoqRbDmU_ZZrsfGyPNLknhW7-dUyja4ndIGzZk7sD27oRUIrXlJWHZ00/exec'
         const leverageButton = document.getElementById('leverage-button');
         const leverageModal = document.getElementById('leverage-modal');
         const modalClose = document.getElementById('modal-close');
@@ -586,6 +692,7 @@
         let currentValue = 1.00;
         let selectedValue = 1.00;
         let user = '';
+        let latestPrice = null; // 新增變數來儲存最新的價格
 
         function toggleRegister() {
             const registerModal = document.getElementById('registerModal');
@@ -634,6 +741,8 @@
                         userButton.textContent = `${username}`;
                         document.querySelector('.login-button').style.display = 'none';
                         document.querySelector('.register-button').style.display = 'none';
+                        document.getElementById('orderButton').style.display = 'block';
+                        document.getElementById('inventoryButton').style.display = 'block';
                         balance = data.balance;
                         updateBalance();
                         toggleRegister();
@@ -658,6 +767,8 @@
                         userButton.textContent = `${username}`;
                         document.querySelector('.login-button').style.display = 'none';
                         document.querySelector('.register-button').style.display = 'none';
+                        document.getElementById('orderButton').style.display = 'block';
+                        document.getElementById('inventoryButton').style.display = 'block';
                         updateBalance();
                         showMessage('登入成功！', 'cashout-info');
                         toggleLogin();
@@ -666,6 +777,132 @@
                     }
                 });
         }
+
+        
+
+        function toggleOrder() {
+            var modal = document.getElementById('orderModal');
+            if (modal.style.display === "none" || modal.style.display === "") {
+                modal.style.display = "flex";
+                setTimeout(() => {
+                    modal.style.animation = "fadeIn 0.5s forwards";
+                }, 10);
+            } else {
+                modal.style.animation = "fadeOut 0.5s forwards";
+                setTimeout(() => {
+                    modal.style.display = "none";
+                }, 500);
+            }
+        }
+        function toggleInventory() {
+            var modal = document.getElementById('inventoryModal');
+            if (modal.style.display === "none" || modal.style.display === "") {
+                modal.style.display = "flex";
+                setTimeout(() => {
+                    modal.style.animation = "fadeIn 0.5s forwards";
+                }, 10);
+            } else {
+                modal.style.animation = "fadeOut 0.5s forwards";
+                setTimeout(() => {
+                    modal.style.display = "none";
+                }, 500);
+            }
+        }
+
+        function fetchInventory() {
+            var url = `${placeOrderurl}?action=queryInventory&user=${user}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var container = document.getElementById('inventory-container');
+                    container.innerHTML = '';
+                    if (data.length === 0) {
+                        container.innerHTML = '<p>暫無庫存</p>';
+                    } else {
+                        data.forEach(stock => {
+                            var quantity = stock[2];
+                            var avgPrice = stock[3];
+                            if (stock[0] === 'NMedStock') {
+                                stockName = '台大醫學概念股'
+                            }
+                            var profitValue = Math.round((latestPrice - avgPrice) * quantity);
+                            var profitPercent = ((latestPrice / avgPrice - 1) * 100).toFixed(2);
+
+                            var profitClass = profitValue >= 0 ? 'profit' : 'loss';
+                            var profitColor = profitValue >= 0 ? 'red' : 'green';
+
+                            var stockHtml = `
+                                <div class="stock-info">
+                                    <div class="stock-number">
+                                        <span class="current-stock">現股</span>
+                                        <span class="stock-name">${stock[0]}</span>
+                                    </div>
+                                    <h2>${stockName}</h2>
+                                    <div class="info-row">
+                                        <span class="info-label">總股數</span>
+                                        <span class="info-value">${quantity}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">成交均價</span>
+                                        <span class="info-value">${avgPrice}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">總損益</span>
+                                        <span class="${profitClass}" style="color: ${profitColor};">${profitValue}（${profitPercent}%）</span>
+                                    </div>
+                                </div>`;
+                            container.innerHTML += stockHtml;
+                        });
+                    }
+                    toggleInventory();
+                });
+        }
+
+
+        function fetchOrders() {
+            var url = `${placeOrderurl}?action=queryOrders&user=${user}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    var container = document.getElementById('order-container');
+                    container.innerHTML = '';
+                    if (data.length === 0) {
+                        container.innerHTML = '<p>暫無委託</p>';
+                    } else {
+                        data.forEach(stock => {
+                            if (stock[1] === 'NMedStock') {
+                                stockName = '台大醫學概念股'
+                            }
+                            var quantity = stock[3];
+                            var price = stock[4];
+                            var status = stock[5];
+                            var stockHtml = `
+                                <div class="stock-info">
+                                    <div class="stock-number">
+                                        <span class="current-stock">掛單</span>
+                                        <span class="stock-name">${stock[1]}</span>
+                                    </div>
+                                    <h2>${stockName}</h2>
+                                    <div class="info-row">
+                                        <span class="info-label">委託股數</span>
+                                        <span class="info-value">${quantity}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">委託價格</span>
+                                        <span class="info-value">${price}</span>
+                                    </div>
+                                    <div class="info-row">
+                                        <span class="info-label">委託狀態</span>
+                                        <span class="info-value">${status}</span>
+                                    </div>
+                                </div>`;
+                            container.innerHTML += stockHtml;
+                        });
+                    }
+                    toggleOrder();
+                });
+        }
+
 
         function showMessage(messageText, className) {
             const existingMessage = document.querySelector('.message');
@@ -727,7 +964,7 @@
                 return;
             }
 
-            fetch(`https://script.google.com/macros/s/AKfycbxHdvg_OIo5sg0KsBkgYgrNrXp0R210NcWPUhzVdcuUz85baCe0RbultHCZ9t-7PlU/exec?action=placeOrder&user=${user}&symbol=${symbol}&quantity=${quantity}&price=${price}`)
+            fetch(`${placeOrderurl}?action=placeOrder&user=${user}&symbol=${symbol}&quantity=${quantity}&price=${price}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'Order placed successfully') {
