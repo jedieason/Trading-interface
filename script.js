@@ -1,7 +1,6 @@
 (async () => {
     const sheetDataUrl = 'https://script.google.com/macros/s/AKfycbyWYh7K1aKkuMEUhHqaIGdBrNik6awxvbLKEOXwzuIwt8pV_vpZSYAdyNldSdFg5so/exec'; // 替換成你的 Google Apps Script 網頁應用程式 URL
     let chart;
-    let latestPrice;
     let balance;
     const user = '你的使用者名稱'; // 替換成你的使用者名稱
 
@@ -74,10 +73,6 @@
             latestPrice = newData.price; // 更新最後價格
         }
 
-        // 更新最新價格
-        const priceInput = document.getElementById('price-input');
-        priceInput.value = latestPrice.toFixed(2);
-        updateEstimatedAmount();
 
         // 獲取新的餘額
         balance = await getBalance(user);
