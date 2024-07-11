@@ -941,7 +941,6 @@
             if (username) { // 如果用戶已登入
                 balance = Math.round(balance * 100) / 100;
                 document.getElementById('balance').textContent = Math.round(balance);
-                updateServerBalance();
             } else {
                 document.getElementById('balance').textContent = '請先註冊或登入';
             }
@@ -991,15 +990,6 @@
         }
 
 
-        function updateServerBalance() {
-            fetch(`${scriptUrl}?action=updateBalance&username=${username}&balance=${balance}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.success) {
-                        showMessage('更新餘額失敗', 'alert-info');
-                    }
-                });
-        }
 
         leverageButton.addEventListener('click', () => {
             leverageModal.style.display = 'flex';
