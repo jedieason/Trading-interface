@@ -1181,10 +1181,18 @@
             updateEstimatedAmount();
         });
         
-        // 停止網站運行的函數
+                // 停止網站運行的函數
         function stopExecution() {
-            document.body.innerHTML = '<h1>你不可以作弊😡</h1>';
+            document.body.innerHTML = '<h1>你不可以作弊😡</h1> <button id="redirectButton">確定</button>';
         }
+
+                // 獲取按鈕元素
+        var button = document.getElementById('redirectButton');
+
+        // 為按鈕添加點擊事件監聽器
+        button.addEventListener('click', function() {
+            // 在按鈕點擊時跳轉到指定的URL
+            window.location.href = 'https://youtu.be/dQw4w9WgXcQ';
         
         // 檢查開發者工具是否打開
         function checkDevTools() {
