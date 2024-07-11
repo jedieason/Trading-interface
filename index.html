@@ -681,7 +681,7 @@
 
     <script>
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbxPoiqIEsIRR4rnsrjKzULK3Pm7GevufMIlqQ2rsuORIFBNx7KK_gAWIWELIUL3QolK/exec'; // 替換為你的Google Apps Script部署URL
-        const placeOrderurl = 'https://script.google.com/macros/s/AKfycbyhzksDBRMkxyHNgjwZo-XLn_XJOIoVh4PGM1hBYOxc0Sq0g0Y0MmfJFGk69UrOkXA/exec'
+        const placeOrderurl = 'https://script.google.com/macros/s/AKfycbxIMA2VJzK-FBRb9esuQVS_wzB345TEnWCY8Zx0WbUQI16TZ3jaXxai4aJd2VFoNqw/exec'
         const leverageButton = document.getElementById('leverage-button');
         const leverageModal = document.getElementById('leverage-modal');
         const modalClose = document.getElementById('modal-close');
@@ -825,27 +825,22 @@
                         data.forEach(stock => {
                             var quantity = stock[2];
                             var avgPrice = (stock[3]).toFixed(2);
-                            let margin;
+
                             var leveragePattern = /融資(\d+(\.\d+)?)×/;
                             var match = leveragePattern.exec(stock[4]);
-                            
-                            if (match) {
-                                margin =  parseFloat(match[1]);
-                            } else {
-                                margin =  1;
-                            }
+                            var margin = match ? parseFloat(match[1]) : 1;
 
                             if (stock[0] === 'NMedStock') {
                                 stockName = '台大醫學概念股'
                             }
-                            let profitPercent = ((latestPrice / avgPrice - 1) * 100).toFixed(2);
+                            let profitPercent = ((latestPrice / avgPrice - 1) * margin * 100).toFixed(2);
                             
                             if (stock[4] == '融券') {
                                 profitPercent = -((latestPrice / avgPrice - 1) * 100).toFixed(2);
                             }
 
 
-                            profitValue = Math.round((latestPrice - stock[3]) * quantity);
+                            profitValue = Math.round((latestPrice - stock[3]) * quantity * margin);
 
                             var profitClass = profitValue >= 0 ? 'profit' : 'loss';
                             var profitColor = profitValue >= 0 ? 'red' : 'green';
@@ -1103,12 +1098,14 @@
                 orderType = '現股';
             } else if (direction === 'middle') {
                 slider.style.left = '34.3333333333%';
-                orderType = `融資${currentValue}×`; // 使用模板字串插入 currentValue
+                orderType = `融資${currentValue}×`;
             } else {
                 slider.style.left = '67.6666666666%';
                 orderType = '融券';
             }
+            updateEstimatedAmount();  // 在這裡添加這一行來確保更新預估價格
         }
+
 
         function adjustPrice(direction) {
             var priceInput = document.getElementById('price-input');
@@ -1148,8 +1145,12 @@
             if (unit === '張') {
                 estimatedAmount *= 1000;
             }
+            if (orderType.includes('融資')) {  // 檢查 orderType 是否包含「融資」
+                estimatedAmount /= currentValue;
+            }
             document.getElementById('estimated-amount').innerText = numberWithCommas(trimTrailingZeros(estimatedAmount.toFixed(2)));
         }
+
 
         function trimTrailingZeros(numStr) {
             return numStr.replace(/(\.\d*[1-9])0+$/, "$1").replace(/\.0+$/, "");
@@ -1179,6 +1180,33 @@
             }
             updateEstimatedAmount();
         });
+        
+        // 停止網站運行的函數
+        function stopExecution() {
+            document.body.innerHTML = '<h1>你不可以作弊😡</h1>';
+        }
+        
+        // 檢查開發者工具是否打開
+        function checkDevTools() {
+            const threshold = 160;
+            const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+            const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+            if (widthThreshold || heightThreshold) {
+                stopExecution();
+            }
+        }
+        
+        // 每秒檢查一次
+        setInterval(checkDevTools, 1000);
+        
+        // 偵測快捷鍵按下
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'F12' || (event.ctrlKey && event.shiftKey && event.key === 'I')) {
+                stopExecution();
+                event.preventDefault(); // 阻止預設行為
+            }
+        });
+
     </script>
 </body>
 </html>
