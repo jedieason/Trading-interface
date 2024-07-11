@@ -825,7 +825,16 @@
                         data.forEach(stock => {
                             var quantity = stock[2];
                             var avgPrice = (stock[3]).toFixed(2);
-                            var margin = 1;
+                            let margin;
+                            var leveragePattern = /融資(\d+(\.\d+)?)×/;
+                            var match = leveragePattern.exec(stock[4]);
+                            
+                            if (match) {
+                                margin =  parseFloat(match[1]);
+                            } else {
+                                margin =  1;
+                            }
+
                             if (stock[0] === 'NMedStock') {
                                 stockName = '台大醫學概念股'
                             }
@@ -1094,7 +1103,7 @@
                 orderType = '現股';
             } else if (direction === 'middle') {
                 slider.style.left = '34.3333333333%';
-                orderType = '融資';
+                orderType = `融資${currentValue}×`; // 使用模板字串插入 currentValue
             } else {
                 slider.style.left = '67.6666666666%';
                 orderType = '融券';
