@@ -341,7 +341,7 @@
             position: relative;
             background-color: transparent;
             border: none;
-            padding: 10px;
+            padding: 10px 25px;
             cursor: pointer;
             font-size: 16px;
             color: black;
@@ -393,14 +393,15 @@
             transition: 0.4s;
         }
         .margin-slider {
-            width: 48%;
-            left: 2%;
+            width: 31.33333333333%;
+            left: 1%;
         }
         .toggle-button.active .margin-slider {
             left: 50%;
         }
         .stock-slider {
-            width: 49%;
+            width: 46%;
+            left: 2%;
         }
         .toggle-button.active .stock-slider {
             left: 50%;
@@ -615,17 +616,18 @@
     </div>
     <div class="container">
         <div class="button-row">
-            <div class="toggle-button" id="margin-toggle">
-                <button onclick="toggleMargin('left')">融資</button>
-                <button onclick="toggleMargin('right')">融券</button>
-                <div class="slider margin-slider" id="margin-slider"></div>
+            <div class="toggle-button" id="toggle-button">
+                <button onclick="toggleSlide('left')">整張</button>
+                <button onclick="toggleSlide('right')">零股</button>
+                <div class="slider stock-slider" id="slider" style="left: 2%;"></div>
             </div>
             <button class="button-leverage" id="leverage-button">1.00×</button>
         </div>
-        <div class="toggle-button" id="toggle-button">
-            <button onclick="toggleSlide('left')">整張</button>
-            <button onclick="toggleSlide('right')">零股</button>
-            <div class="slider stock-slider" id="slider" style="left: 1%;"></div>
+        <div class="toggle-button" id="margin-toggle">
+            <button onclick="toggleMargin('left')">現股</button>
+            <button onclick="toggleMargin('middle')">融資</button>
+            <button onclick="toggleMargin('right')">融券</button>
+            <div class="slider margin-slider" id="margin-slider"></div>
         </div>
         <div class="price-container">
             <div class="price-control">
@@ -679,7 +681,7 @@
 
     <script>
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbxPoiqIEsIRR4rnsrjKzULK3Pm7GevufMIlqQ2rsuORIFBNx7KK_gAWIWELIUL3QolK/exec'; // 替換為你的Google Apps Script部署URL
-        const placeOrderurl = 'https://script.google.com/macros/s/AKfycbx2qyvEUQYEoqRbDmU_ZZrsfGyPNLknhW7-dUyja4ndIGzZk7sD27oRUIrXlJWHZ00/exec'
+        const placeOrderurl = 'https://script.google.com/macros/s/AKfycbyhzksDBRMkxyHNgjwZo-XLn_XJOIoVh4PGM1hBYOxc0Sq0g0Y0MmfJFGk69UrOkXA/exec'
         const leverageButton = document.getElementById('leverage-button');
         const leverageModal = document.getElementById('leverage-modal');
         const modalClose = document.getElementById('modal-close');
@@ -693,6 +695,7 @@
         let selectedValue = 1.00;
         let user = '';
         let latestPrice = null; // 新增變數來儲存最新的價格
+        let orderType = '現股'; // 預設值
 
         function toggleRegister() {
             const registerModal = document.getElementById('registerModal');
@@ -822,19 +825,28 @@
                         data.forEach(stock => {
                             var quantity = stock[2];
                             var avgPrice = (stock[3]).toFixed(2);
+                            var margin = 1;
                             if (stock[0] === 'NMedStock') {
                                 stockName = '台大醫學概念股'
                             }
-                            var profitValue = Math.round((latestPrice - avgPrice) * quantity);
-                            var profitPercent = ((latestPrice / avgPrice - 1) * 100).toFixed(2);
+                            let profitPercent = ((latestPrice / avgPrice - 1) * 100).toFixed(2);
+                            
+                            if (stock[4] == '融券') {
+                                profitPercent = -((latestPrice / avgPrice - 1) * 100).toFixed(2);
+                            }
+
+
+                            profitValue = Math.round((latestPrice - stock[3]) * quantity);
 
                             var profitClass = profitValue >= 0 ? 'profit' : 'loss';
                             var profitColor = profitValue >= 0 ? 'red' : 'green';
 
+
+
                             var stockHtml = `
                                 <div class="stock-info">
                                     <div class="stock-number">
-                                        <span class="current-stock">現股</span>
+                                        <span class="current-stock">${stock[4]}</span>
                                         <span class="stock-name">${stock[0]}</span>
                                     </div>
                                     <h2>${stockName}</h2>
@@ -879,7 +891,7 @@
                             var stockHtml = `
                                 <div class="stock-info">
                                     <div class="stock-number">
-                                        <span class="current-stock">現股</span>
+                                        <span class="current-stock">${stock[6]}</span>
                                         <span class="stock-name">${stock[1]}</span>
                                     </div>
                                     <h2>${stockName}</h2>
@@ -925,7 +937,7 @@
         function updateBalance() {
             if (username) { // 如果用戶已登入
                 balance = Math.round(balance * 100) / 100;
-                document.getElementById('balance').textContent = balance.toFixed(2);
+                document.getElementById('balance').textContent = Math.round(balance);
                 updateServerBalance();
             } else {
                 document.getElementById('balance').textContent = '請先註冊或登入';
@@ -964,7 +976,7 @@
                 return;
             }
 
-            fetch(`${placeOrderurl}?action=placeOrder&user=${user}&symbol=${symbol}&quantity=${quantity}&price=${price}`)
+            fetch(`${placeOrderurl}?action=placeOrder&user=${user}&symbol=${symbol}&quantity=${quantity}&price=${price}&orderType=${orderType}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'Order placed successfully') {
@@ -1066,10 +1078,10 @@
             var slider = document.getElementById('slider');
             var unitLabel = document.getElementById('unit-label');
             if (direction === 'left') {
-                slider.style.left = '1%';
+                slider.style.left = '2%';
                 unitLabel.innerText = '張';
             } else {
-                slider.style.left = '50%';
+                slider.style.left = '52%';
                 unitLabel.innerText = '股';
             }
             updateEstimatedAmount();
@@ -1078,9 +1090,14 @@
         function toggleMargin(direction) {
             var slider = document.getElementById('margin-slider');
             if (direction === 'left') {
-                slider.style.left = '2%';
+                slider.style.left = '1%';
+                orderType = '現股';
+            } else if (direction === 'middle') {
+                slider.style.left = '34.3333333333%';
+                orderType = '融資';
             } else {
-                slider.style.left = '50%';
+                slider.style.left = '67.6666666666%';
+                orderType = '融券';
             }
         }
 
