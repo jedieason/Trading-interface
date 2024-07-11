@@ -693,7 +693,7 @@
         let currentValue = 1.00;
         let selectedValue = 1.00;
         let user = '';
-        let latestPrice = null; // 新增變數來儲存最新的價格
+        let latestPrice; // 新增變數來儲存最新的價格
         let orderType = '現股'; // 預設值
         let onMargin = false;
 
@@ -823,16 +823,21 @@
                         container.innerHTML = '<p>暫無庫存</p>';
                     } else {
                         data.forEach(stock => {
+                            let margin;
                             var quantity = stock[2];
                             var avgPrice = (stock[3]).toFixed(2);
-
                             var leveragePattern = /融資(\d+(\.\d+)?)×/;
                             var match = leveragePattern.exec(stock[4]);
-                            var margin = match ? parseFloat(match[1]) : 1;
+                            if (match != null) {
+                                margin = parseFloat(match[1]);
+                            } else{
+                                margin = 1;
+                            }
 
                             if (stock[0] === 'NMedStock') {
                                 stockName = '台大醫學概念股'
                             }
+
                             let profitPercent = ((latestPrice / avgPrice - 1) * margin * 100).toFixed(2);
                             
                             if (stock[4] == '融券') {
@@ -844,7 +849,7 @@
 
                             var profitClass = profitValue >= 0 ? 'profit' : 'loss';
                             var profitColor = profitValue >= 0 ? 'red' : 'green';
-
+                            console.log(latestPrice);
 
 
                             var stockHtml = `
@@ -1180,12 +1185,12 @@
         let devtools = false;
         const threshold = 160;
 
-        function stopExecution() {
-            document.body.innerHTML = '<h1>你不可以作弊😡</h1>';
-            setTimeout(function() {
-            window.location.href = 'https://youtu.be/dQw4w9WgXcQ';
-            }, 2000);
-        }
+        // function stopExecution() {
+        //     document.body.innerHTML = '<h1>你不可以作弊😡</h1>';
+        //     setTimeout(function() {
+        //     window.location.href = 'https://youtu.be/dQw4w9WgXcQ';
+        //     }, 2000);
+        // }
 
         function isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
