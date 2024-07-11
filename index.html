@@ -821,7 +821,7 @@
                     } else {
                         data.forEach(stock => {
                             var quantity = stock[2];
-                            var avgPrice = stock[3];
+                            var avgPrice = (stock[3]).toFixed(2);
                             if (stock[0] === 'NMedStock') {
                                 stockName = '台大醫學概念股'
                             }
