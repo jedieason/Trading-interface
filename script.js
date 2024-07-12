@@ -1,8 +1,7 @@
 (async () => {
     const sheetDataUrl = 'https://script.google.com/macros/s/AKfycbyWYh7K1aKkuMEUhHqaIGdBrNik6awxvbLKEOXwzuIwt8pV_vpZSYAdyNldSdFg5so/exec'; // 替換成你的 Google Apps Script 網頁應用程式 URL
     let chart;
-    let balance;
-    const user = '你的使用者名稱'; // 替換成你的使用者名稱
+
 
     // 更新 price input 和預估金額函數，只在首次載入時運行
     const updatePriceAndEstimatedAmount = (data) => {
