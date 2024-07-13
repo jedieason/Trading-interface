@@ -74,7 +74,9 @@
 
 
         // 獲取新的餘額
-        balance = await getBalance(user);
+        if (username) { // 如果用戶已登入
+            balance = await getBalance(user);
+        }
 
         // 呼叫 updateBalance 函數
         updateBalance();
