@@ -794,16 +794,22 @@
         }
         
         function showSuccess() {
-            loadingMessage.innerHTML = `
-            <div class="success-icon"></div>
-                <div class="message-text">掛單成功</div>
-            `;
-            loadingMessage.style.display = 'flex';
-            setTimeout(() => {
-                loadingMessage.style.opacity = '1';
-            }, 10);
+    loadingMessage.innerHTML = `
+        <div class="success-icon"></div>
+        <div class="message-text">掛單成功</div>
+    `;
+    loadingMessage.style.display = 'flex';
+    setTimeout(() => {
+        loadingMessage.style.opacity = '1';
+    }, 10);
 
-            }
+    setTimeout(() => {
+        loadingMessage.style.opacity = '0';
+        setTimeout(() => {
+            loadingMessage.style.display = 'none';
+        }, 1000); // 淡出動畫的持續時間
+    }, 1000); // 1秒後開始淡出
+}
 
 
         function toggleRegister() {
@@ -1110,7 +1116,7 @@
                 .then(data => {
                     if (data.status === 'Order placed successfully') {
                         showSuccess();
-                        hideLoading();
+                        //hideLoading();
                         // showMessage('訂單提交成功！', 'cashout-info');
                     } else {
                         showMessage('訂單提交失敗！', 'alert-info');
