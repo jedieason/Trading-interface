@@ -593,6 +593,37 @@
             justify-content: center;
             align-items: center;
         }
+        .success-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 4px solid #4CAF50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        .success-icon::before,
+        .success-icon::after {
+            content: '';
+            position: absolute;
+            background-color: #4CAF50;
+        }
+        .success-icon::before {
+            width: 4px;
+            height: 20px;
+            transform: rotate(45deg);
+            top: 16px;
+            left: 26.5px;
+        }
+        .success-icon::after {
+            width: 4px;
+            height: 10px;
+            transform: rotate(-45deg);
+            top: 24px;
+            left: 18px;
+        }
     </style>
 </head>
 <body>
@@ -741,9 +772,14 @@
         let orderType = '現股'; // 預設值
         let onMargin = false;
         let balance;
+        
+        const loadingMessage = document.getElementById('loadingMessage');
 
         function showLoading() {
-            const loadingMessage = document.getElementById('loadingMessage');
+            loadingMessage.innerHTML = `
+                <div class="spinner"></div>
+                <div class="message-text">修蛋幾勒</div>
+            `;
             loadingMessage.style.display = 'flex';
             setTimeout(() => {
                 loadingMessage.style.opacity = '1';
@@ -751,12 +787,23 @@
         }
 
         function hideLoading() {
-            const loadingMessage = document.getElementById('loadingMessage');
             loadingMessage.style.opacity = '0';
             setTimeout(() => {
                 loadingMessage.style.display = 'none';
             }, 500);
         }
+        
+        function showSuccess() {
+            loadingMessage.innerHTML = `
+            <div class="success-icon"></div>
+                <div class="message-text">掛單成功</div>
+            `;
+            loadingMessage.style.display = 'flex';
+            setTimeout(() => {
+                loadingMessage.style.opacity = '1';
+            }, 10);
+
+            }
 
 
         function toggleRegister() {
@@ -1057,12 +1104,13 @@
                 showMessage('餘額不足', 'alert-info');
                 return;
             }
-
+            showLoading()
             fetch(`${placeOrderurl}?action=placeOrder&user=${user}&symbol=${symbol}&quantity=${quantity}&price=${price}&orderType=${orderType}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'Order placed successfully') {
-                        showMessage('訂單提交成功！', 'cashout-info');
+                        showSuccess();
+                        // showMessage('訂單提交成功！', 'cashout-info');
                     } else {
                         showMessage('訂單提交失敗！', 'alert-info');
                     }
