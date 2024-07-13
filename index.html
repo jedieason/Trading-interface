@@ -1073,7 +1073,7 @@
         function updateBalance() {
             if (username) { // 如果用戶已登入
                 balance = Math.round(balance * 100) / 100;
-                document.getElementById('balance').textContent = Math.round(balance);
+                document.getElementById('balance').textContent = numberWithCommas(Math.round(balance));
             } else {
                 document.getElementById('balance').textContent = '請先註冊或登入';
             }
