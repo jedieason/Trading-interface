@@ -200,42 +200,46 @@
             transition: opacity 1s ease-out;
         }
 
-        .intro-button {
+        .header-button-row {
+            display: flex;
             position: absolute;
+            top: 20px;
+            right: 20px;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .intro-button,
+        .register-button,
+        .login-button,
+        .inventory-button,
+        .order-button {
             font-size: 1em;
-            color: #aaa;
             cursor: pointer;
             background: none;
             border: none;
             outline: none;
         }
 
+        .login-button {
+            color: #fff;
+            background: #000;
+            border-radius: 6px;
+            padding: 3px 6px;
+        }
+
+        .intro-button,
         .register-button,
         .inventory-button,
         .order-button {
-            position: absolute;
-            font-size: 1em;
             color: #aaa;
-            cursor: pointer;
-            background: none;
-            border: none;
-            outline: none;
-            z-index: 1000; /* 增加這行 */
         }
 
-
-        .login-button {
-            position: absolute;
-            font-size: 1em;
-            color: #fff;
-            background: #000;
-            border: none;
-            border-radius: 6px;
-            padding: 3px 6px;
-            cursor: pointer;
-            outline: none;
-            z-index: 1000; /* 增加這行 */
+        .divider {
+            border-left: 1px solid #ddd; /* 顏色和簡介按鈕一致 */
+            height: 20px; /* 調整高度以適應按鈕 */
         }
+
 
         .register-modal,
         .login-modal {
@@ -628,12 +632,16 @@
 </head>
 <body>
     <div class="header">𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓</div>
-    <button class="register-button" onclick="toggleRegister()">註冊</button>
-    <button class="login-button" onclick="toggleLogin()">登入</button>
-    <button id="orderButton" class="order-button" onclick="fetchOrders()" style="display:none;">委託</button>
-    <button id="inventoryButton" class="inventory-button" onclick="fetchInventory()" style="display:none;">庫存</button>
-    <button id="userButton" class="intro-button" style="display:none;"></button>
-
+    <div class="header-button-row">
+        <button id="orderButton" class="order-button" onclick="fetchOrders()" style="display:none;">委託</button>
+        <div id="divider" class="divider"  style="display:none;"></div>
+        <button id="inventoryButton" class="inventory-button" onclick="fetchInventory()" style="display:none;">庫存</button>
+        <div id="divider" class="divider"  style="display:none;"></div>
+        <button class="register-button" onclick="toggleRegister()">註冊</button>
+        <button class="login-button" onclick="toggleLogin()">登入</button>
+        <button id="userButton" class="intro-button" style="display:none;"></button>
+    </div>
+    
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="toggleOrder()">&times;</button>
@@ -857,12 +865,16 @@
                         username = registerUsername;  // 這裡賦值
                         user = registerUsername;
                         const userButton = document.getElementById('userButton');
+                        const dividers = document.querySelectorAll('.divider');
                         userButton.style.display = 'block';
                         userButton.textContent = `${username}`;
                         document.querySelector('.login-button').style.display = 'none';
                         document.querySelector('.register-button').style.display = 'none';
                         document.getElementById('orderButton').style.display = 'block';
                         document.getElementById('inventoryButton').style.display = 'block';
+                        dividers.forEach(divider => {
+                            divider.style.display = 'block';
+                        });
                         balance = data.balance;
                         updateBalance();
                         toggleRegister();
@@ -886,12 +898,16 @@
                         user = loginUsername;
                         username = loginUsername;  // 這裡賦值
                         const userButton = document.getElementById('userButton');
+                        const dividers = document.querySelectorAll('.divider');
                         userButton.style.display = 'block';
                         userButton.textContent = `${username}`;
                         document.querySelector('.login-button').style.display = 'none';
                         document.querySelector('.register-button').style.display = 'none';
                         document.getElementById('orderButton').style.display = 'block';
                         document.getElementById('inventoryButton').style.display = 'block';
+                        dividers.forEach(divider => {
+                            divider.style.display = 'block';
+                        });
                         updateBalance();
                         showMessage('登入成功！', 'cashout-info');
                         toggleLogin();
