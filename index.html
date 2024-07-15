@@ -825,7 +825,7 @@
     <script>
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbxPoiqIEsIRR4rnsrjKzULK3Pm7GevufMIlqQ2rsuORIFBNx7KK_gAWIWELIUL3QolK/exec'; // 替換為你的Google Apps Script部署URL
         const placeOrderurl = 'https://script.google.com/macros/s/AKfycbwAL3LtHnKB3wWDPVBYu-NQ8J_RryyEPktysjaEy--tfxZryMo0cCYW1Rvlrg-_3kI/exec'
-        const Stock1url = "https://script.google.com/macros/s/AKfycbxYnx52JChtOhzVSpLyaOXEV9HhXxCCAnZlJFHkPHJBIBldtsG1ZIgtNrAwxFb0zIk/exec?action=priceComparison";
+        const Stock1url = "https://script.google.com/macros/s/AKfycbxYnx52JChtOhzVSpLyaOXEV9HhXxCCAnZlJFHkPHJBIBldtsG1ZIgtNrAwxFb0zIk/exec";
         const Stock2url = "https://script.google.com/macros/s/AKfycbwIvDADxlxf076RuWa34BzmbJDa0_-0a_vTAofZS4GU8bCLaSCN6h0w_hz6a5RRuBFj/exec";
         const Stock3url = "https://script.google.com/macros/s/AKfycbxdqFsj6COZ0lFUafz_3bFi4D76ZQwfz5s_8-_-kxTLg_TbN5Mf7K-A7sSzqnDrFwGR/exec";
         const Stock4url = "https://script.google.com/macros/s/AKfycbxje-mLTTFn_5vl4B2oTpvg6uh1Q7VWQI1yeDIl8P6sY1pdk3S7RXAjCgDdjcOGe60/exec";
@@ -1123,14 +1123,15 @@
         }
 
         async function fetchStockData(stockUrl) {
-            try {
-                const response = await fetch(stockUrl);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error("Error fetching stock data:", error);
-            }
-        }
+    try {
+        const response = await fetch(`${stockUrl}?action=priceComparison`);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching stock data:", error);
+        throw error; // Optional: re-throw the error to propagate it
+    }
+}
 
         async function updateStockData(stockUrl, priceElement, changeElement) {
             const stockData = await fetchStockData(stockUrl);
