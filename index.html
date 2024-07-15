@@ -633,7 +633,7 @@
             cursor: pointer;
             border-radius: 5px;
             display: block;
-            width: 20%;
+            width: 23%;
             box-sizing: border-box;
             color: black;
             font-size: 16px;
@@ -1121,6 +1121,7 @@
          function Selection(event) {
             const button = event.currentTarget;
             const symbol = button.querySelector('.selection-code').innerText;
+            const NameofStock = button.querySelector('.selection-name').innerText;
             const index = button.getAttribute('data-index');
             let url;
             if (index == 1){
@@ -1138,6 +1139,7 @@
             // 使用 myModule 設置新的 sheetDataUrl 並初始化圖表
             myModule.then(module => {
                 module.setSheetDataUrl(url);
+                module.setNameofStock(NameofStock); // 設置新的名稱
                 module.initializeChart();
             });
 
@@ -1531,7 +1533,7 @@
         }
 
         // 使用方法
-        detectDevToolsAndRespond();
+        // detectDevToolsAndRespond();
 
     </script>
 </body>
