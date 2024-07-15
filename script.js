@@ -1,6 +1,7 @@
 const myModule = (async () => {
     let chart;
     let sheetDataUrl = "https://script.google.com/macros/s/AKfycbxYnx52JChtOhzVSpLyaOXEV9HhXxCCAnZlJFHkPHJBIBldtsG1ZIgtNrAwxFb0zIk/exec";
+    let NameofStock = "Close AI 5268.TW"; // 定義變數
 
     // 更新 price input 和預估金額函數，只在首次載入時運行
     const updatePriceAndEstimatedAmount = (data) => {
@@ -22,10 +23,10 @@ const myModule = (async () => {
                 selected: 1
             },
             title: {
-                text: '臺大醫學概念股'
+                text: NameofStock // 使用變數
             },
             series: [{
-                name: '臺大醫學概念股',
+                name: NameofStock, // 使用變數
                 data: data,
                 type: 'areaspline',
                 threshold: null,
@@ -89,7 +90,8 @@ const myModule = (async () => {
     // 返回需要在外部調用的變數和函數
     return {
         initializeChart,
-        setSheetDataUrl: (url) => { sheetDataUrl = url; }
+        setSheetDataUrl: (url) => { sheetDataUrl = url; },
+        setNameofStock: (name) => { NameofStock = name; } // 新增設置名稱的函數
     };
 })();
 
