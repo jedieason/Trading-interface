@@ -624,6 +624,9 @@
         .negative {
             color: green;
         }
+        .neutral {
+            color: black;
+        }
         .Selection-button {
             background-color: #f0f0f0;
             border: none;
@@ -687,32 +690,31 @@
             <span class="selection-price">成交價</span>
             <span class="selection-change">小時漲跌幅</span>
         </div>
-        <button class="selection-button" onclick="Selection(event)">
+        <button class="selection-button" onclick="Selection(event)" data-index="1">
             <span class="selection-name">台積電<br><span class="selection-code">2330.TW</span></span>
             <span class="selection-price" id="stock1-price">0.00</span>
             <span class="selection-change" id="stock1-change">0.00%</span>
         </button>
-        <button class="selection-button" onclick="Selection(event)">
+        <button class="selection-button" onclick="Selection(event)" data-index="2">
             <span class="selection-name">鴻海<br><span class="selection-code">2317.TW</span></span>
             <span class="selection-price" id="stock2-price">0.00</span>
             <span class="selection-change" id="stock2-change">0.00%</span>
         </button>
-        <button class="selection-button" onclick="Selection(event)">
+        <button class="selection-button" onclick="Selection(event)" data-index="3">
             <span class="selection-name">中華電信<br><span class="selection-code">2412.TW</span></span>
             <span class="selection-price" id="stock3-price">0.00</span>
             <span class="selection-change" id="stock3-change">0.00%</span>
         </button>
-        <button class="selection-button" onclick="Selection(event)">
+        <button class="selection-button" onclick="Selection(event)" data-index="4">
             <span class="selection-name">台灣大<br><span class="selection-code">3045.TW</span></span>
             <span class="selection-price" id="stock4-price">0.00</span>
             <span class="selection-change" id="stock4-change">0.00%</span>
         </button>
-        <button class="selection-button" onclick="Selection(event)">
+        <button class="selection-button" onclick="Selection(event)" data-index="5">
             <span class="selection-name">大立光<br><span class="selection-code">3008.TW</span></span>
             <span class="selection-price" id="stock5-price">0.00</span>
             <span class="selection-change" id="stock5-change">0.00%</span>
         </button>
-        
     </div>
 
     <div id="registerModal" class="register-modal center">
@@ -757,7 +759,8 @@
                 <button onclick="toggleSlide('right')">零股</button>
                 <div class="slider stock-slider" id="slider" style="left: 2%;"></div>
             </div>
-            <button class="Selection-button" onclick="toggleSelection()">選股</button>
+            <!-- 修改選股按鈕 -->
+            <button class="Selection-button" onclick="toggleSelection(); updateAllStockData();">選股</button>
             <button class="button-leverage" id="leverage-button">1.00x</button>
         </div>
         <div class="toggle-button" id="margin-toggle">
@@ -839,6 +842,7 @@
         const modalMultipliersElement = document.getElementById('modal-multipliers');
         const modalDecrementButton = document.getElementById('modal-decrement');
         const modalIncrementButton = document.getElementById('modal-increment');
+        let sheetDataUrl = "https://script.google.com/macros/s/AKfycbxYnx52JChtOhzVSpLyaOXEV9HhXxCCAnZlJFHkPHJBIBldtsG1ZIgtNrAwxFb0zIk/exec";
         let currentValue = 1.00;
         let selectedValue = 1.00;
         let user = '';
@@ -846,16 +850,21 @@
         let orderType = '現股'; // 預設值
         let onMargin = false;
         let balance;
+        let symbol = '2330.TW';
         
         const loadingMessage = document.getElementById('loadingMessage');
 
         document.addEventListener("DOMContentLoaded", () => {
+            updateAllStockData();
+        });
+
+        function updateAllStockData() {
             updateStockData(Stock1url, document.getElementById("stock1-price"), document.getElementById("stock1-change"));
             updateStockData(Stock2url, document.getElementById("stock2-price"), document.getElementById("stock2-change"));
             updateStockData(Stock3url, document.getElementById("stock3-price"), document.getElementById("stock3-change"));
             updateStockData(Stock4url, document.getElementById("stock4-price"), document.getElementById("stock4-change"));
             updateStockData(Stock5url, document.getElementById("stock5-price"), document.getElementById("stock5-change"));
-        });
+        }
 
 
         function showLoading() {
@@ -1112,26 +1121,34 @@
 
         function Selection(event) {
             const button = event.currentTarget;
-            const stockName = button.querySelector('.selection-name').innerText;
-            const stockCode = button.querySelector('.selection-code').innerText;
-            const stockPrice = button.querySelector('.selection-price').innerText;
-            const stockChange = button.querySelector('.selection-change').innerText;
-
-            console.log(`Selected stock: ${stockName} (${stockCode}) - Price: ${stockPrice}, Change: ${stockChange}`);
-            // 在這裡可以處理你需要的邏輯，例如更新UI或傳遞數據到後端
+            symbol = button.querySelector('.selection-code').innerText;
+            const index = button.getAttribute('data-index');
+            if (index == 1){
+                sheetDataUrl = Stock1url;
+            } else if (index == 2){
+                sheetDataUrl = Stock2url;
+            } else if (index == 3){
+                sheetDataUrl = Stock3url;
+            } else if (index == 4){
+                sheetDataUrl = Stock4url;
+            } else if (index == 5) {
+                sheetDataUrl = Stock5url
+            }
+            initializeChart();
             toggleSelection(); // 關閉選股視窗
         }
 
+
         async function fetchStockData(stockUrl) {
-    try {
-        const response = await fetch(`${stockUrl}?action=priceComparison`);
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error("Error fetching stock data:", error);
-        throw error; // Optional: re-throw the error to propagate it
-    }
-}
+            try {
+                const response = await fetch(`${stockUrl}?action=priceComparison`);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching stock data:", error);
+                throw error; // Optional: re-throw the error to propagate it
+            }
+        }
 
         async function updateStockData(stockUrl, priceElement, changeElement) {
             const stockData = await fetchStockData(stockUrl);
@@ -1142,15 +1159,25 @@
                 priceElement.textContent = lastPrice;
                 changeElement.textContent = changePercent.toFixed(2) + "%";
 
-                if (changePercent >= 0) {
+                if (changePercent > 0) {
+                    priceElement.classList.add("positive");
+                    priceElement.classList.remove("negative", "neutral");
                     changeElement.classList.add("positive");
-                    changeElement.classList.remove("negative");
-                } else {
+                    changeElement.classList.remove("negative", "neutral");
+                } else if (changePercent < 0) {
+                    priceElement.classList.add("negative");
+                    priceElement.classList.remove("positive", "neutral");
                     changeElement.classList.add("negative");
-                    changeElement.classList.remove("positive");
+                    changeElement.classList.remove("positive", "neutral");
+                } else {
+                    priceElement.classList.add("neutral");
+                    priceElement.classList.remove("positive", "negative");
+                    changeElement.classList.add("neutral");
+                    changeElement.classList.remove("positive", "negative");
                 }
             }
         }
+
 
 
         function fetchOrders() {
@@ -1252,7 +1279,6 @@
                 quantity = -quantity;
             }
 
-            const symbol = 'NMedStock';
             const estimatedAmount = parseFloat(document.getElementById('estimated-amount').innerText.replace(/,/g, ''));
 
             if (type === 'buy' && estimatedAmount > balance) {
