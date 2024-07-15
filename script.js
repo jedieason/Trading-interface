@@ -1,6 +1,6 @@
-(async () => {
+const myModule = (async () => {
     let chart;
-
+    let sheetDataUrl = "https://script.google.com/macros/s/AKfycbxYnx52JChtOhzVSpLyaOXEV9HhXxCCAnZlJFHkPHJBIBldtsG1ZIgtNrAwxFb0zIk/exec";
 
     // 更新 price input 和預估金額函數，只在首次載入時運行
     const updatePriceAndEstimatedAmount = (data) => {
@@ -71,7 +71,6 @@
             latestPrice = newData.price; // 更新最後價格
         }
 
-
         // 獲取新的餘額
         if (username) { // 如果用戶已登入
             balance = await getBalance(user);
@@ -87,6 +86,11 @@
     // 每10秒更新一次數據和餘額
     setInterval(updateChartData, 10000);
 
+    // 返回需要在外部調用的變數和函數
+    return {
+        initializeChart,
+        setSheetDataUrl: (url) => { sheetDataUrl = url; }
+    };
 })();
 
 async function getBalance(userName) {
