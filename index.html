@@ -690,27 +690,27 @@
             <span class="selection-change">小時漲跌幅</span>
         </div>
         <button class="selection-button" onclick="Selection(event)" data-index="1">
-            <span class="selection-name">台積電<br><span class="selection-code">2330.TW</span></span>
+            <span class="selection-name">Close AI<br><span class="selection-code">5268.TW</span></span>
             <span class="selection-price" id="stock1-price">0.00</span>
             <span class="selection-change" id="stock1-change">0.00%</span>
         </button>
         <button class="selection-button" onclick="Selection(event)" data-index="2">
-            <span class="selection-name">鴻海<br><span class="selection-code">2317.TW</span></span>
+            <span class="selection-name">台積雷<br><span class="selection-code">2331.TW</span></span>
             <span class="selection-price" id="stock2-price">0.00</span>
             <span class="selection-change" id="stock2-change">0.00%</span>
         </button>
         <button class="selection-button" onclick="Selection(event)" data-index="3">
-            <span class="selection-name">中華電信<br><span class="selection-code">2412.TW</span></span>
+            <span class="selection-name">Macrosoft<br><span class="selection-code">1975.TW</span></span>
             <span class="selection-price" id="stock3-price">0.00</span>
             <span class="selection-change" id="stock3-change">0.00%</span>
         </button>
         <button class="selection-button" onclick="Selection(event)" data-index="4">
-            <span class="selection-name">台灣大<br><span class="selection-code">3045.TW</span></span>
+            <span class="selection-name">黃達<br><span class="selection-code">2383.TW</span></span>
             <span class="selection-price" id="stock4-price">0.00</span>
             <span class="selection-change" id="stock4-change">0.00%</span>
         </button>
         <button class="selection-button" onclick="Selection(event)" data-index="5">
-            <span class="selection-name">大立光<br><span class="selection-code">3008.TW</span></span>
+            <span class="selection-name">迪土尼<br><span class="selection-code">1923.TW</span></span>
             <span class="selection-price" id="stock5-price">0.00</span>
             <span class="selection-change" id="stock5-change">0.00%</span>
         </button>
@@ -849,7 +849,7 @@
         let orderType = '現股'; // 預設值
         let onMargin = false;
         let balance;
-        let symbol = '2330.TW';
+        let symbol = '5268.TW';
         
         const loadingMessage = document.getElementById('loadingMessage');
 
@@ -1118,25 +1118,31 @@
              }
          }
 
-        function Selection(event) {
+         function Selection(event) {
             const button = event.currentTarget;
-            symbol = button.querySelector('.selection-code').innerText;
+            const symbol = button.querySelector('.selection-code').innerText;
             const index = button.getAttribute('data-index');
+            let url;
             if (index == 1){
-                sheetDataUrl = Stock1url;
+                url = "https://script.google.com/macros/s/AKfycbxYnx52JChtOhzVSpLyaOXEV9HhXxCCAnZlJFHkPHJBIBldtsG1ZIgtNrAwxFb0zIk/exec";
             } else if (index == 2){
-                sheetDataUrl = Stock2url;
+                url = "https://script.google.com/macros/s/AKfycbwIvDADxlxf076RuWa34BzmbJDa0_-0a_vTAofZS4GU8bCLaSCN6h0w_hz6a5RRuBFj/exec";
             } else if (index == 3){
-                sheetDataUrl = Stock3url;
+                url = "https://script.google.com/macros/s/AKfycbxdqFsj6COZ0lFUafz_3bFi4D76ZQwfz5s_8-_-kxTLg_TbN5Mf7K-A7sSzqnDrFwGR/exec";
             } else if (index == 4){
-                sheetDataUrl = Stock4url;
+                url = "https://script.google.com/macros/s/AKfycbxje-mLTTFn_5vl4B2oTpvg6uh1Q7VWQI1yeDIl8P6sY1pdk3S7RXAjCgDdjcOGe60/exec";
             } else if (index == 5) {
-                sheetDataUrl = Stock5url
+                url = "https://script.google.com/macros/s/AKfycbzt0L8acGkTPzQkTApwASGJPvkUBmn_Kd3ryg6I4QL_fJuCRcD5S0Fc5U9BhKT7ZAc/exec";
             }
-            initializeChart();
+
+            // 使用 myModule 設置新的 sheetDataUrl 並初始化圖表
+            myModule.then(module => {
+                module.setSheetDataUrl(url);
+                module.initializeChart();
+            });
+
             toggleSelection(); // 關閉選股視窗
         }
-
 
         async function fetchStockData(stockUrl) {
             try {
