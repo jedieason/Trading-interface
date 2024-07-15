@@ -300,12 +300,11 @@
         .button-leverage {
             background-color: #f0f0f0;
             border: none;
-            padding: 10px 20px;
             margin: 5px 0;
             cursor: pointer;
             border-radius: 5px;
             display: block;
-            width: 30%;
+            width: 25%;
             box-sizing: border-box;
             color: black;
             font-size: 16px;
@@ -581,6 +580,80 @@
             top: 24px;
             left: 18px;
         }
+
+        .selection-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+            margin-top: 8px;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .selection-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 0;
+            border: none;
+            background: none;
+            text-align: left;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .selection-name {
+            flex: 1;
+            color: black;
+        }
+        .selection-code {
+            font-size: 0.8em;
+            color: #aaa;
+        }
+        .selection-price {
+            flex: 1;
+            text-align: center;
+        }
+        .selection-change {
+            flex: 1;
+            text-align: right;
+        }
+        .positive {
+            color: red;
+        }
+        .negative {
+            color: green;
+        }
+        .Selection-button {
+            background-color: #f0f0f0;
+            border: none;
+            margin: 5px 0;
+            cursor: pointer;
+            border-radius: 5px;
+            display: block;
+            width: 20%;
+            box-sizing: border-box;
+            color: black;
+            font-size: 16px;
+        }
+        .Selection-modal {
+            position: fixed;
+            top: 29%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.97);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            text-align: left;
+            animation: fadeInZoom 0.5s forwards;
+            z-index: 10;
+            display: none;
+        }
+
+        .Selection-modal {
+            top: 27%;
+        }
     </style>
 </head>
 <body>
@@ -606,6 +679,40 @@
             <button class="close-btn" onclick="toggleInventory()">&times;</button>
             <div id="inventory-container"></div>
         </div>
+    </div>
+    <div id="SelectionModal" class="Selection-modal center">
+        <button class="close-btn" onclick="toggleSelection()">×</button>
+        <div class="selection-header">
+            <span class="selection-name">股名</span>
+            <span class="selection-price">成交價</span>
+            <span class="selection-change">小時漲跌幅</span>
+        </div>
+        <button class="selection-button" onclick="Selection(event)">
+            <span class="selection-name">台積電<br><span class="selection-code">2330.TW</span></span>
+            <span class="selection-price" id="stock1-price">0.00</span>
+            <span class="selection-change" id="stock1-change">0.00%</span>
+        </button>
+        <button class="selection-button" onclick="Selection(event)">
+            <span class="selection-name">鴻海<br><span class="selection-code">2317.TW</span></span>
+            <span class="selection-price" id="stock2-price">0.00</span>
+            <span class="selection-change" id="stock2-change">0.00%</span>
+        </button>
+        <button class="selection-button" onclick="Selection(event)">
+            <span class="selection-name">中華電信<br><span class="selection-code">2412.TW</span></span>
+            <span class="selection-price" id="stock3-price">0.00</span>
+            <span class="selection-change" id="stock3-change">0.00%</span>
+        </button>
+        <button class="selection-button" onclick="Selection(event)">
+            <span class="selection-name">台灣大<br><span class="selection-code">3045.TW</span></span>
+            <span class="selection-price" id="stock4-price">0.00</span>
+            <span class="selection-change" id="stock4-change">0.00%</span>
+        </button>
+        <button class="selection-button" onclick="Selection(event)">
+            <span class="selection-name">大立光<br><span class="selection-code">3008.TW</span></span>
+            <span class="selection-price" id="stock5-price">0.00</span>
+            <span class="selection-change" id="stock5-change">0.00%</span>
+        </button>
+        
     </div>
 
     <div id="registerModal" class="register-modal center">
@@ -650,6 +757,7 @@
                 <button onclick="toggleSlide('right')">零股</button>
                 <div class="slider stock-slider" id="slider" style="left: 2%;"></div>
             </div>
+            <button class="Selection-button" onclick="toggleSelection()">選股</button>
             <button class="button-leverage" id="leverage-button">1.00x</button>
         </div>
         <div class="toggle-button" id="margin-toggle">
@@ -717,6 +825,11 @@
     <script>
         const scriptUrl = 'https://script.google.com/macros/s/AKfycbxPoiqIEsIRR4rnsrjKzULK3Pm7GevufMIlqQ2rsuORIFBNx7KK_gAWIWELIUL3QolK/exec'; // 替換為你的Google Apps Script部署URL
         const placeOrderurl = 'https://script.google.com/macros/s/AKfycbwAL3LtHnKB3wWDPVBYu-NQ8J_RryyEPktysjaEy--tfxZryMo0cCYW1Rvlrg-_3kI/exec'
+        const Stock1url = "https://script.google.com/macros/s/AKfycbxYnx52JChtOhzVSpLyaOXEV9HhXxCCAnZlJFHkPHJBIBldtsG1ZIgtNrAwxFb0zIk/exec?action=priceComparison";
+        const Stock2url = "https://script.google.com/macros/s/AKfycbwIvDADxlxf076RuWa34BzmbJDa0_-0a_vTAofZS4GU8bCLaSCN6h0w_hz6a5RRuBFj/exec";
+        const Stock3url = "https://script.google.com/macros/s/AKfycbxdqFsj6COZ0lFUafz_3bFi4D76ZQwfz5s_8-_-kxTLg_TbN5Mf7K-A7sSzqnDrFwGR/exec";
+        const Stock4url = "https://script.google.com/macros/s/AKfycbxje-mLTTFn_5vl4B2oTpvg6uh1Q7VWQI1yeDIl8P6sY1pdk3S7RXAjCgDdjcOGe60/exec";
+        const Stock5url = "https://script.google.com/macros/s/AKfycbzt0L8acGkTPzQkTApwASGJPvkUBmn_Kd3ryg6I4QL_fJuCRcD5S0Fc5U9BhKT7ZAc/exec";
         const leverageButton = document.getElementById('leverage-button');
         const leverageModal = document.getElementById('leverage-modal');
         const modalClose = document.getElementById('modal-close');
@@ -735,6 +848,15 @@
         let balance;
         
         const loadingMessage = document.getElementById('loadingMessage');
+
+        document.addEventListener("DOMContentLoaded", () => {
+            updateStockData(Stock1url, document.getElementById("stock1-price"), document.getElementById("stock1-change"));
+            updateStockData(Stock2url, document.getElementById("stock2-price"), document.getElementById("stock2-change"));
+            updateStockData(Stock3url, document.getElementById("stock3-price"), document.getElementById("stock3-change"));
+            updateStockData(Stock4url, document.getElementById("stock4-price"), document.getElementById("stock4-change"));
+            updateStockData(Stock5url, document.getElementById("stock5-price"), document.getElementById("stock5-change"));
+        });
+
 
         function showLoading() {
             loadingMessage.innerHTML = `
@@ -755,22 +877,22 @@
         }
         
         function showSuccess() {
-    loadingMessage.innerHTML = `
-        <div class="success-icon"></div>
-        <div class="message-text">委託成功</div>
-    `;
-    loadingMessage.style.display = 'flex';
-    setTimeout(() => {
-        loadingMessage.style.opacity = '1';
-    }, 10);
+            loadingMessage.innerHTML = `
+                <div class="success-icon"></div>
+                <div class="message-text">委託成功</div>
+            `;
+            loadingMessage.style.display = 'flex';
+            setTimeout(() => {
+                loadingMessage.style.opacity = '1';
+            }, 10);
 
-    setTimeout(() => {
-        loadingMessage.style.opacity = '0';
-        setTimeout(() => {
-            loadingMessage.style.display = 'none';
-        }, 1000); // 淡出動畫的持續時間
-    }, 1000); // 1秒後開始淡出
-}
+            setTimeout(() => {
+                loadingMessage.style.opacity = '0';
+                setTimeout(() => {
+                    loadingMessage.style.display = 'none';
+                }, 1000); // 淡出動畫的持續時間
+            }, 1000); // 1秒後開始淡出
+        }
 
 
         function toggleRegister() {
@@ -970,6 +1092,63 @@
                     }
                     toggleInventory();
                 });
+        }
+
+        function toggleSelection() {
+             const SelectionModal = document.getElementById('SelectionModal');
+             const registerModal = document.getElementById('registerModal');
+
+             if (SelectionModal.style.display === 'none' || SelectionModal.style.display === '') {
+                 SelectionModal.style.display = 'block';
+                 SelectionModal.style.animation = 'fadeInZoom 0.5s forwards';
+                 registerModal.style.display = 'none';
+             } else {
+                 SelectionModal.style.animation = 'fadeOutZoom 0.5s forwards';
+                 setTimeout(() => {
+                     SelectionModal.style.display = 'none';
+                 }, 500);
+             }
+         }
+
+        function Selection(event) {
+            const button = event.currentTarget;
+            const stockName = button.querySelector('.selection-name').innerText;
+            const stockCode = button.querySelector('.selection-code').innerText;
+            const stockPrice = button.querySelector('.selection-price').innerText;
+            const stockChange = button.querySelector('.selection-change').innerText;
+
+            console.log(`Selected stock: ${stockName} (${stockCode}) - Price: ${stockPrice}, Change: ${stockChange}`);
+            // 在這裡可以處理你需要的邏輯，例如更新UI或傳遞數據到後端
+            toggleSelection(); // 關閉選股視窗
+        }
+
+        async function fetchStockData(stockUrl) {
+            try {
+                const response = await fetch(stockUrl);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching stock data:", error);
+            }
+        }
+
+        async function updateStockData(stockUrl, priceElement, changeElement) {
+            const stockData = await fetchStockData(stockUrl);
+            if (stockData) {
+                const lastPrice = stockData.latestPrice;
+                const changePercent = ((stockData.latestPrice - stockData.oneHourAgoPrice) / stockData.oneHourAgoPrice) * 100;
+
+                priceElement.textContent = lastPrice;
+                changeElement.textContent = changePercent.toFixed(2) + "%";
+
+                if (changePercent >= 0) {
+                    changeElement.classList.add("positive");
+                    changeElement.classList.remove("negative");
+                } else {
+                    changeElement.classList.add("negative");
+                    changeElement.classList.remove("positive");
+                }
+            }
         }
 
 
@@ -1320,7 +1499,7 @@
         }
 
         // 使用方法
-        detectDevToolsAndRespond();
+        // detectDevToolsAndRespond();
 
     </script>
 </body>
