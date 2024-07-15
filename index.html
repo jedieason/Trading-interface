@@ -1057,9 +1057,17 @@
                                 margin = 1;
                             }
 
-                            if (stock[0] === 'NMedStock') {
-                                stockName = '台大醫學概念股'
-                            }
+                            if (stock[1] === '5268.TW') {
+                                stockName = 'Close AI'
+                            } else if (stock[1] === '2331.TW') {
+                              stockName = '台積雷'
+                            } else if (stock[1] === '1975.TW') {
+                                stockName = 'Macrosoft'
+                            } else if (stock[1] === '5268.TW') {
+                                stockName = '黃達'
+                            } else if (stock[1] === '1923.TW') {
+                                stockName = '迪土尼'
+                            } 
 
                             let profitPercent = ((latestPrice / avgPrice - 1) * margin * 100).toFixed(2);
                             
@@ -1201,9 +1209,17 @@
                     } else {
                         hideLoading();
                         data.forEach(stock => {
-                            if (stock[1] === 'NMedStock') {
-                                stockName = '台大醫學概念股'
-                            }
+                            if (stock[1] === '5268.TW') {
+                                stockName = 'Close AI'
+                            } else if (stock[1] === '2331.TW') {
+                              stockName = '台積雷'
+                            } else if (stock[1] === '1975.TW') {
+                                stockName = 'Macrosoft'
+                            } else if (stock[1] === '5268.TW') {
+                                stockName = '黃達'
+                            } else if (stock[1] === '1923.TW') {
+                                stockName = '迪土尼'
+                            } 
                             var quantity = stock[3];
                             var price = stock[4];
                             var status = stock[5];
@@ -1533,7 +1549,7 @@
         }
 
         // 使用方法
-        detectDevToolsAndRespond();
+        // detectDevToolsAndRespond();
 
     </script>
 </body>
