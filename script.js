@@ -1,5 +1,4 @@
 (async () => {
-    const sheetDataUrl = 'https://script.google.com/macros/s/AKfycbyWYh7K1aKkuMEUhHqaIGdBrNik6awxvbLKEOXwzuIwt8pV_vpZSYAdyNldSdFg5so/exec'; // 替換成你的 Google Apps Script 網頁應用程式 URL
     let chart;
 
 
