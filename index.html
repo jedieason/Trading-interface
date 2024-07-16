@@ -850,6 +850,7 @@
         let onMargin = false;
         let balance;
         let symbol = '5268.TW';
+        let placingOrders = false;
         
         const loadingMessage = document.getElementById('loadingMessage');
 
@@ -1292,10 +1293,13 @@
         });
 
         function placeOrder(type) {
+            if (placingOrders) {
+                return;
             if (!user) {
                 showMessage('請先登入', 'alert-info');
                 return;
             }
+            placingOrders = true;
 
             const price = parseFloat(document.getElementById('price-input').value);
             let quantity = parseInt(document.getElementById('quantity-input').value);
@@ -1325,6 +1329,7 @@
                         showMessage('訂單提交失敗！', 'alert-info');
                     }
                 });
+            placingOrders = false;
         }
 
 
