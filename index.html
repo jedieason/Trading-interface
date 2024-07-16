@@ -1295,11 +1295,11 @@
         function placeOrder(type) {
             if (placingOrders) {
                 return;
+            }
             if (!user) {
                 showMessage('請先登入', 'alert-info');
                 return;
             }
-            placingOrders = true;
 
             const price = parseFloat(document.getElementById('price-input').value);
             let quantity = parseInt(document.getElementById('quantity-input').value);
