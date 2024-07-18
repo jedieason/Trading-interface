@@ -855,28 +855,39 @@
         const loadingMessage = document.getElementById('loadingMessage');
 
         document.addEventListener("DOMContentLoaded", () => {
-                        // 檢查 localStorage 中是否有儲存的使用者資訊
+            // 檢查 localStorage 中是否有儲存的使用者資訊
             const savedUsername = localStorage.getItem('username');
             const savedPassword = localStorage.getItem('password');
 
             if (savedUsername && savedPassword) {
                 // 自動登入
-                user = savedUsername;
-                username = savedUsername;  // 這裡賦值
-                // balance = await getBalance(username);
-                updateBalance();
-                const userButton = document.getElementById('userButton');
-                const dividers = document.querySelectorAll('.divider');
-                userButton.style.display = 'block';
-                userButton.textContent = `${username}`;
-                document.querySelector('.login-button').style.display = 'none';
-                document.querySelector('.register-button').style.display = 'none';
-                document.getElementById('orderButton').style.display = 'block';
-                document.getElementById('inventoryButton').style.display = 'block';
-                dividers.forEach(divider => {
-                    divider.style.display = 'block';
-                });
-                showMessage('自動登入成功！', 'cashout-info');
+                showLoading();
+                fetch(`${scriptUrl}?action=queryBalance&username=${savedUsername}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            hideLoading();
+                            balance = data.balance;
+                            user = savedUsername;
+                            username = savedUsername;  // 這裡賦值
+                            const userButton = document.getElementById('userButton');
+                            const dividers = document.querySelectorAll('.divider');
+                            userButton.style.display = 'block';
+                            userButton.textContent = `${username}`;
+                            document.querySelector('.login-button').style.display = 'none';
+                            document.querySelector('.register-button').style.display = 'none';
+                            document.getElementById('orderButton').style.display = 'block';
+                            document.getElementById('inventoryButton').style.display = 'block';
+                            dividers.forEach(divider => {
+                                divider.style.display = 'block';
+                            });
+                            updateBalance();
+                            showMessage('自動登入成功！', 'cashout-info');
+                        } else {
+                            hideLoading();
+                            showMessage('自動登入失敗！', 'alert-info');
+                        }
+                    });
             }
             updateAllStockData();
         });
