@@ -855,6 +855,28 @@
         const loadingMessage = document.getElementById('loadingMessage');
 
         document.addEventListener("DOMContentLoaded", () => {
+                        // 檢查 localStorage 中是否有儲存的使用者資訊
+            const savedUsername = localStorage.getItem('username');
+            const savedPassword = localStorage.getItem('password');
+
+            if (savedUsername && savedPassword) {
+                // 自動登入
+                user = savedUsername;
+                username = savedUsername;  // 這裡賦值
+                updateBalance();
+                const userButton = document.getElementById('userButton');
+                const dividers = document.querySelectorAll('.divider');
+                userButton.style.display = 'block';
+                userButton.textContent = `${username}`;
+                document.querySelector('.login-button').style.display = 'none';
+                document.querySelector('.register-button').style.display = 'none';
+                document.getElementById('orderButton').style.display = 'block';
+                document.getElementById('inventoryButton').style.display = 'block';
+                dividers.forEach(divider => {
+                    divider.style.display = 'block';
+                });
+                showMessage('自動登入成功！', 'cashout-info');
+            }
             updateAllStockData();
         });
 
@@ -948,6 +970,8 @@
                         showMessage('註冊成功！', 'cashout-info');
                         username = registerUsername;  // 這裡賦值
                         user = registerUsername;
+                        localStorage.setItem('username', loginUsername);
+                        localStorage.setItem('password', loginPassword);
                         const userButton = document.getElementById('userButton');
                         const dividers = document.querySelectorAll('.divider');
                         userButton.style.display = 'block';
@@ -981,6 +1005,8 @@
                         balance = data.balance;
                         user = loginUsername;
                         username = loginUsername;  // 這裡賦值
+                        localStorage.setItem('username', loginUsername);
+                        localStorage.setItem('password', loginPassword);
                         const userButton = document.getElementById('userButton');
                         const dividers = document.querySelectorAll('.divider');
                         userButton.style.display = 'block';
