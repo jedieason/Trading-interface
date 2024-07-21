@@ -665,6 +665,8 @@
 <body>
     <div class="header"><img src="logo.svg" alt="𝔑𝔗𝔘𝔐𝔈𝔇 ℭ𝔄𝔐𝔓"></div>
     <div class="header-button-row">
+        <button class="order-button" onclick="redirect()">Crashed</button>
+        <div id="divider" class="divider" ></div>
         <button id="orderButton" class="order-button" onclick="fetchOrders()" style="display:none;">委託</button>
         <div id="divider" class="divider"  style="display:none;"></div>
         <button id="inventoryButton" class="inventory-button" onclick="fetchInventory()" style="display:none;">庫存</button>
@@ -672,6 +674,7 @@
         <button class="register-button" onclick="toggleRegister()">註冊</button>
         <button class="login-button" onclick="toggleLogin()">登入</button>
         <button id="userButton" class="intro-button" style="display:none;"></button>
+        <div id="divider" class="divider" ></div>
     </div>
     
     <div id="orderModal" class="modal">
@@ -1240,6 +1243,10 @@
             }
         }
 
+        function redirect(){
+            window.location.href = 'https://jedieason.github.io/Crashed/';
+        }
+
 
 
         function fetchOrders() {
@@ -1601,7 +1608,7 @@
         }
 
         // 使用方法
-        // detectDevToolsAndRespond();
+        detectDevToolsAndRespond();
 
     </script>
 </body>
